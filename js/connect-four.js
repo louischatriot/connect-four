@@ -6,7 +6,7 @@ var rows = 6, columns = 7
   , currentPlayer
   , width, height
   , cellSize   // Cells are square
-  , $svg = $("body svg")
+  , container
   ;
 
 
@@ -25,45 +25,56 @@ function init () {
   currentPlayer = 1;   // Yellow starts
 
   // Calculate dimensions for drawing (use the largest viewport that can accomodate full grid and top rows)
-  var wWidth = $(window).width(), wHeight = $(window).height()
-    , cellSize = Math.min(wWidth / columns, wHeight / (rows + topRows))
-    , containerWidth = cellSize * columns
+  var wWidth = $(window).width(), wHeight = $(window).height();
+  cellSize = Math.min(wWidth / columns, wHeight / (rows + topRows))
+  var containerWidth = cellSize * columns
     , containerHeight = cellSize * (rows + topRows)
     ;
 
-  // Draw grid and lines
-  return;
-  $svg.find("").remove();
-  //$svg.attr("width", containerWidth);
-  //$svg.attr("height", containerHeight);
-  return;
-  $svg.append('<line style="stroke: rgb(255,0,0); stroke-width: 2;" x1="10" x2="10" y1="50" y2="50"></line>');
-  var $line;
-    $line = $('<line style="stroke: rgb(255,0,0); stroke-width: 2;">');
-    $line.attr("x1","100");
-    $line.attr("x2","100");
-    $line.attr("y1","500");
-    $line.attr("y2","500");
-    $svg.append($line);
-    console.log($line);
-  for (var j = 0; j <= rows; j += 1) {
+  // Draw grid
+  container = d3.select("#container")
+                .attr("width", containerWidth)
+                .attr("height", containerHeight)
+                ;
+  for (var i = 0; i <= rows; i += 1) {
+    container.append("line")
+             .attr("class", "grid-line")
+             .attr("x1", 0)
+             .attr("y1", (topRows + i) * cellSize)
+             .attr("x2", containerWidth)
+             .attr("y2", (topRows + i) * cellSize)
+             ;
+  }
+  for (i = 0; i <= columns; i += 1) {
+    container.append("line")
+             .attr("class", "grid-line")
+             .attr("x1", i * cellSize)
+             .attr("y1", topRows * cellSize)
+             .attr("x2", i * cellSize)
+             .attr("y2", containerHeight)
+             ;
   }
 }
 
 // If player is not supplied, alternate
-function play(column, player) {
+function play(c, player) {
   currentPlayer = (player === 1 || player === -1) ? player : currentPlayer;
 
   for (var r = 0; r < rows; r += 1) {
-    if (board[column][r] === 0) {
-      board[column][r] = currentPlayer;
+    if (board[c][r] === 0) {
+      board[c][r] = currentPlayer;
       currentPlayer *= -1;
+      container.append("circle")
+               .attr("class", "chip-" + (currentPlayer === 1 ? "yellow" : "red"))
+               .attr("cx", (c + 0.5) * cellSize)
+               .attr("cy", (topRows + rows - r - 0.5) * cellSize)
+               .attr("r", cellSize / 2.25)
       break;
     }
   }
 
   // Do nothing is play is illegal (i.e. column is full)
-  //displayBoard();   // debug
+  displayBoard();   // debug
 }
 
 

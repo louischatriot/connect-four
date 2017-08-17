@@ -1,87 +1,16 @@
-/* T-shaped piece */
-.piece0 {
-  position: absolute;
-  background-color: #444444;
+#container .grid-line {
+  stroke: #999;
+  stroke-width: 2px;
 }
 
-.piece1 {
-  position: absolute;
-  background-color: #884444;
+#container .chip-red {
+  stroke: black;
+  stroke-width: 2;
+  fill: red;
 }
 
-.piece2 {
-  position: absolute;
-  background-color: #444488;
+#container .chip-yellow {
+  stroke: black;
+  stroke-width: 2;
+  fill: #ffd300;
 }
-
-.piece3 {
-  position: absolute;
-  background-color: #448844;
-}
-
-.piece4 {
-  position: absolute;
-  background-color: #448888;
-}
-
-.piece5 {
-  position: absolute;
-  background-color: #888844;
-}
-
-.piece6 {
-  position: absolute;
-  background-color: #888888;
-}
-
-
-#gameContainer {
-  position: absolute;
-  border-style: solid;
-  border-color: #000000;
-  border-width: 1px;
-}
-
-
-#scoreContainer {
-  position: absolute;
-  font-family: 'Verdana';
-  font-size: 10px;
-}
-
-#lineCountContainer {
-  position: absolute;
-  font-family: 'Verdana';
-  font-size: 10px;
-}
-
-#levelContainer {
-  position: absolute;
-  font-family: 'Verdana';
-  font-size: 10px;
-}
-
-
-#piecePreviewContainer {
-  position: absolute;
-  font-family: 'Verdana';
-  font-size: 7px;
-}
-
-#pauseContainer {
-  position: absolute;
-  font-family: 'Verdana';
-  font-size: 10px;
-  color: #880000;
-}
-
-#mask {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-}
-
-
-
