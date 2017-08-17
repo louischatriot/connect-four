@@ -14,3 +14,7 @@
   stroke-width: 2;
   fill: #ffd300;
 }
+
+#container .shadow {
+  opacity: 0.6;
+}

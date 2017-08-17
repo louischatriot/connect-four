@@ -63,28 +63,83 @@ function play(c, player) {
   for (var r = 0; r < rows; r += 1) {
     if (board[c][r] === 0) {
       board[c][r] = currentPlayer;
-      currentPlayer *= -1;
+      removeShadow();
       container.append("circle")
-               .attr("class", "chip-" + (currentPlayer === 1 ? "yellow" : "red"))
+               .attr("class", "chip-" + color(currentPlayer))
                .attr("cx", (c + 0.5) * cellSize)
                .attr("cy", (topRows + rows - r - 0.5) * cellSize)
                .attr("r", cellSize / 2.25)
+      currentPlayer *= -1;
       break;
     }
   }
 
   // Do nothing is play is illegal (i.e. column is full)
-  displayBoard();   // debug
+  //displayBoard();   // debug
 }
 
+function color (player) {
+  return player === 1 ? "yellow" : "red";
+}
 
+var currentShadowCol;
+
+function redrawShadow (c) {
+  if (currentShadowCol === c) { return; }
+  //console.log("=================");
+  //console.log(c);
+  //console.log(currentShadowCol);
+  removeShadow();
+  drawShadow(c);
+}
+
+function drawShadow (c) {
+  container.append("circle")
+           .attr("class", "shadow chip-" + color(currentPlayer))
+           .attr("cx", (c + 0.5) * cellSize)
+           .attr("cy", (topRows / 2) * cellSize)
+           .attr("r", cellSize / 2.25)
+  currentShadowCol = c;
+}
+
+function removeShadow () {
+  container.selectAll(".shadow").remove();
+  currentShadowCol = undefined;
+}
+
+function colFromEvent (e) {
+  var parentOffset = $(e.srcElement).parent().offset()
+    , relativeX = e.pageX - parentOffset.left
+    , c = Math.floor(relativeX / cellSize)
+    ;
+
+  return c;
+}
+
+$("svg#container").on("mousemove", function (e) {
+  redrawShadow(colFromEvent(e));
+});
+
+$("svg#container").on("mouseout", function (e) {
+  // Not sure why hasClass() doesn't work, not interested
+  var classes = $(e.toElement).attr("class");
+  classes = classes ? classes.split(" ") : [];
+  for (var i = 0; i < classes.length; i += 1) {
+    if (classes[i] === "shadow") { return; }
+  }
+  removeShadow(colFromEvent(e));
+});
+
+$("svg#container").on("click", function (e) {
+  play(colFromEvent(e));
+  redrawShadow(colFromEvent(e));
+});
 
 
 
 function displayBoard () {
   var line;
 
-  console.log("===================================================================================");
   for (var i = rows - 1; i >= 0; i -= 1) {
     line = "";
     for (var j = 0; j < columns; j += 1) {
