@@ -87,23 +87,32 @@ function play(c, player) {
 
 
 
+// Return -1 if out of bounds
+function colFromEvent (e) {
+  //alert(e);
+  //alert(e.touches);
+  //alert(e.touches[0]);
+  //alert(e.touches[0].pageX);
 
-// UI
 
-var currentShadowCol;
+  var parentOffset = $(e.srcElement).parent().offset()
+    , relativeX = (e.pageX !== undefined ? e.pageX : e.page.x) - parentOffset.left - marginLeft
+    , c = Math.floor(relativeX / cellSize)
+    ;
+
+  if (c < 0 || c >= columns) { c = -1; }
+  return c;
+}
 
 function color (player) {
   return player === 1 ? "yellow" : "red";
 }
 
-function redrawShadow (c) {
-  if (currentShadowCol === c) { return; }
-  //console.log("=================");
-  //console.log(c);
-  //console.log(currentShadowCol);
-  removeShadow();
-  drawShadow(c);
-}
+
+// ============================================================
+// <UI - mouse click version>
+
+var selectedColumn, mobileEvent;
 
 function drawShadow (c) {
   container.append("circle")
@@ -119,36 +128,90 @@ function removeShadow () {
   currentShadowCol = undefined;
 }
 
-function colFromEvent (e) {
-  var parentOffset = $(e.srcElement).parent().offset()
-    , relativeX = e.pageX - parentOffset.left
-    , c = Math.floor(relativeX / cellSize)
-    ;
+function clicked (e) {
+  //alert("=================");
+  var c = colFromEvent(e);
+  //var c = colFromEvent(mobileEvent);
+  //alert(c);
+  if (c === -1) {
+    removeShadow();
+    selectedColumn = undefined;
+    return;
+  }
 
-  return c;
+  if (selectedColumn !== undefined && selectedColumn === c) {
+    play(c);
+    removeShadow();
+    selectedColumn = undefined;
+  } else {
+    selectedColumn = c;
+    removeShadow();
+    drawShadow(c);
+  }
 }
 
-$("svg#container").on("mousemove", function (e) {
-  redrawShadow(colFromEvent(e));
-});
+$("svg#container").on("click", clicked);
 
-$("svg#container").on("mouseout", function (e) {
-  // Not sure why hasClass() doesn't work, not interested
-  var classes = $(e.toElement).attr("class");
-  classes = classes ? classes.split(" ") : [];
-  for (var i = 0; i < classes.length; i += 1) {
-    if (classes[i] === "shadow") { return; }
-  }
-  removeShadow(colFromEvent(e));
-});
+//$("svg#container").on("touchend", clicked);
 
-$("svg#container").on("click", function (e) {
-  play(colFromEvent(e));
-  redrawShadow(colFromEvent(e));
-});
+//$("svg#container").on("touchstart", function (e) { mobileEvent = e; });
+//$("svg#container").on("touchmove", function (e) { mobileEvent = e; });
+
+// </UI - mouse click version>
 
 
+// ============================================================
+// <UI - mouse hover version, not too good actually>
 
+//var currentShadowCol;
+
+//function redrawShadow (c) {
+  //if (currentShadowCol === c) { return; }
+  //removeShadow();
+  //drawShadow(c);
+//}
+
+//function drawShadow (c) {
+  //container.append("circle")
+           //.attr("class", "shadow chip-" + color(currentPlayer))
+           //.attr("cx", (c + 0.5) * cellSize)
+           //.attr("cy", (topRows / 2) * cellSize)
+           //.attr("r", cellSize / 2.25)
+  //currentShadowCol = c;
+//}
+
+//function removeShadow () {
+  //container.selectAll(".shadow").remove();
+  //currentShadowCol = undefined;
+//}
+
+//$("svg#container").on("mousemove", function (e) {
+  //redrawShadow(colFromEvent(e));
+//});
+
+//$("svg#container").on("mouseout", function (e) {
+  //// Not sure why hasClass() doesn't work, not interested
+  //var classes = $(e.toElement).attr("class");
+  //classes = classes ? classes.split(" ") : [];
+  //for (var i = 0; i < classes.length; i += 1) {
+    //if (classes[i] === "shadow") { return; }
+  //}
+  //removeShadow(colFromEvent(e));
+//});
+
+//$("svg#container").on("click", function (e) {
+  //play(colFromEvent(e));
+  //redrawShadow(colFromEvent(e));
+//});
+
+// </UI - mouse hover version, not too good actually>
+// ============================================================
+
+
+
+
+
+// Debug
 function displayBoard () {
   var line;
 
@@ -161,9 +224,6 @@ function displayBoard () {
     console.log(line);
   }
 }
-
-
-
 
 
 // Initialization
