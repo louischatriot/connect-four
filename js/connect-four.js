@@ -152,10 +152,11 @@ function clicked (e) {
 
 $("svg#container").on("click", clicked);
 
-//$("svg#container").on("touchend", clicked);
-
-//$("svg#container").on("touchstart", function (e) { mobileEvent = e; });
-//$("svg#container").on("touchmove", function (e) { mobileEvent = e; });
+// Prevent scrolling on mobile
+$(document.body).on("touchmove", function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+});
 
 // </UI - mouse click version>
 
