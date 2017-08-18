@@ -7,6 +7,8 @@ var rows = 6, columns = 7
   , width, height
   , cellSize   // Cells are square
   , container
+  , margin = 0.025   // In percent of cell size, on all directions
+  , marginLeft, marginTop
   ;
 
 
@@ -30,18 +32,23 @@ function init () {
   var containerWidth = cellSize * columns
     , containerHeight = cellSize * (rows + topRows)
     ;
+  cellSize *= (1 - 2 * margin);
+  marginLeft = containerWidth * margin;
+  marginTop = containerHeight * margin;
 
   // Draw grid
   container = d3.select("#container")
                 .attr("width", containerWidth)
                 .attr("height", containerHeight)
+                .append("g")
+                .attr("transform", "translate(" + marginLeft + "," + marginTop + ")")
                 ;
   for (var i = 0; i <= rows; i += 1) {
     container.append("line")
              .attr("class", "grid-line")
              .attr("x1", 0)
              .attr("y1", (topRows + i) * cellSize)
-             .attr("x2", containerWidth)
+             .attr("x2", columns * cellSize)
              .attr("y2", (topRows + i) * cellSize)
              ;
   }
@@ -51,7 +58,7 @@ function init () {
              .attr("x1", i * cellSize)
              .attr("y1", topRows * cellSize)
              .attr("x2", i * cellSize)
-             .attr("y2", containerHeight)
+             .attr("y2", (topRows + rows) * cellSize)
              ;
   }
 }
@@ -78,11 +85,16 @@ function play(c, player) {
   //displayBoard();   // debug
 }
 
+
+
+
+// UI
+
+var currentShadowCol;
+
 function color (player) {
   return player === 1 ? "yellow" : "red";
 }
-
-var currentShadowCol;
 
 function redrawShadow (c) {
   if (currentShadowCol === c) { return; }
