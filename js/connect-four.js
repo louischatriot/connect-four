@@ -63,26 +63,17 @@ function init () {
   }
 }
 
-// If chip is supplied, use it as next chip
-function play(c, chip) {
+function play(c) {
   for (var r = 0; r < rows; r += 1) {
     if (board[c][r] === 0) {
       board[c][r] = currentPlayer;
-
-      if (!chip) {
-        removeShadow();
-        container.append("circle")
-                 .attr("class", "chip-" + color(currentPlayer))
-                 .attr("cx", (c + 0.5) * cellSize)
-                 .attr("cy", (topRows + rows - r - 0.5) * cellSize)
-                 .attr("r", cellSize / 2.25)
-      } else {
-        chip.style("opacity", 1)
-            .attr("class", "chip-" + color(currentPlayer))
-            ;
-
-        chip.attr("cy", (topRows + rows -r - 0.5) * cellSize);
-      }
+      var chip = container.append("circle")
+                          .attr("class", "chip-" + color(currentPlayer))
+                          .attr("cx", (c + 0.5) * cellSize)
+                          .attr("cy", (topRows / 2) * cellSize)
+                          .attr("r", cellSize / 2.25);
+      chip.transition().duration(600)
+          .attr("cy", (topRows + rows - r - 0.5) * cellSize);
       currentPlayer *= -1;
       break;
     }
@@ -144,10 +135,8 @@ function clicked (e) {
   }
 
   if (selectedColumn !== undefined && selectedColumn === c) {
-    play(c, d3.select(".shadow"));
-    console.log("------------------");
-    return;
     removeShadow();
+    play(c);
     selectedColumn = undefined;
   } else {
     selectedColumn = c;
