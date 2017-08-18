@@ -63,19 +63,26 @@ function init () {
   }
 }
 
-// If player is not supplied, alternate
-function play(c, player) {
-  currentPlayer = (player === 1 || player === -1) ? player : currentPlayer;
-
+// If chip is supplied, use it as next chip
+function play(c, chip) {
   for (var r = 0; r < rows; r += 1) {
     if (board[c][r] === 0) {
       board[c][r] = currentPlayer;
-      removeShadow();
-      container.append("circle")
-               .attr("class", "chip-" + color(currentPlayer))
-               .attr("cx", (c + 0.5) * cellSize)
-               .attr("cy", (topRows + rows - r - 0.5) * cellSize)
-               .attr("r", cellSize / 2.25)
+
+      if (!chip) {
+        removeShadow();
+        container.append("circle")
+                 .attr("class", "chip-" + color(currentPlayer))
+                 .attr("cx", (c + 0.5) * cellSize)
+                 .attr("cy", (topRows + rows - r - 0.5) * cellSize)
+                 .attr("r", cellSize / 2.25)
+      } else {
+        chip.style("opacity", 1)
+            .attr("class", "chip-" + color(currentPlayer))
+            ;
+
+        chip.attr("cy", (topRows + rows -r - 0.5) * cellSize);
+      }
       currentPlayer *= -1;
       break;
     }
@@ -129,10 +136,7 @@ function removeShadow () {
 }
 
 function clicked (e) {
-  //alert("=================");
   var c = colFromEvent(e);
-  //var c = colFromEvent(mobileEvent);
-  //alert(c);
   if (c === -1) {
     removeShadow();
     selectedColumn = undefined;
@@ -140,7 +144,9 @@ function clicked (e) {
   }
 
   if (selectedColumn !== undefined && selectedColumn === c) {
-    play(c);
+    play(c, d3.select(".shadow"));
+    console.log("------------------");
+    return;
     removeShadow();
     selectedColumn = undefined;
   } else {
